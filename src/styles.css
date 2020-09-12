@@ -41,11 +41,17 @@ header {
 }
 
 #game_board {
-  height: 25em;
-  width: 25em;
+  height: 20em;
+  width: 20em;
+  border-radius: 0.5em;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   background-color: white;
+}
+
+.game_panel {
+  height: 5em;
+  width: 5em;
 }
