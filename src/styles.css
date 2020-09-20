@@ -32,6 +32,11 @@ header {
   display: inline-block;
 }
 
+#size_options ul:hover {
+  color: white;
+  background: gray;
+}
+
 #game_area {
   height: 30em;
   display: flex;
@@ -41,14 +46,19 @@ header {
 }
 
 #game_board {
+  background-color: white;
   height: 20em;
   width: 20em;
+
   border-radius: 0.5em;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
+  padding: 0.25em;
+
+  /*Grid layout definition - change number of repeats
+  in grid-template-columns from JS when board size changed*/
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   align-items: center;
-  background-color: white;
+  justify-items: center;
 }
 
 .game_panel {
