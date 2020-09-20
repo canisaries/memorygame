@@ -51,7 +51,7 @@ header {
   width: 20em;
 
   border-radius: 0.5em;
-  padding: 0.25em;
+  padding: 0.5em;
 
   /*Grid layout definition - change number of repeats
   in grid-template-columns from JS when board size changed*/
