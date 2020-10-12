@@ -12,3 +12,10 @@ const docboard = document.getElementById("game_board");
 let board = new GameBoard(docboard);
 // Start new game with small board size
 board.newGame(BOARD_SIZES.SMALL);
+
+// TODO:
+// - other board sizes (css + button functionalities)
+// - selecting panels and checking matches
+// - making matched panels unclickable
+// - resetting board
+// - timer? score? other fun stuff
