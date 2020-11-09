@@ -4,15 +4,17 @@
 // Enum for board sizes (side length)
 export const BOARD_SIZES = {
   SMALL: 4,
-  MEDIUM: 8,
-  LARGE: 12
+  MEDIUM: 6,
+  LARGE: 8
 };
 
 export default class GameBoard {
   constructor(board) {
     this.board = board;
-    this.panels = 16; // Default amount of panels
+    this.boardsize = BOARD_SIZES.SMALL; // Default size
     this.selectedPanel = null; // Currently selected panel
+    this.gameStarted = false; // If game was started or not
+    // (to decide whether to make player confirm their request to start a new game)
 
     // Make game board listen to clicks
     let thisobj = this; // Workaround to allow self-reference in anon func
@@ -24,16 +26,51 @@ export default class GameBoard {
     });
   }
 
-  // Resets any possible old game and sets up panels.
+  // Sets up a new game.
   newGame(size) {
-    this.setupPanels(size * size);
+    this.gameStarted = false;
+    this.boardsize = size;
+    this.updateBoardCSS();
+    this.setupPanels();
   }
 
-  // Adds panels to board
-  setupPanels(panel_amt) {
-    this.panels = panel_amt;
+  // Updates board CSS according to current size.
+  updateBoardCSS() {
+    // DEBUG
+    console.log("updateBoardCSS called! Board size: " + this.boardsize);
+    this.board.setAttribute(
+      "grid-template-columns",
+      `repeat(${this.boardsize}, 1fr)`
+    );
+    // DEBUG
+    console.log(
+      "updateBoardCSS called! Board size: " +
+        this.board.getAttribute("grid-template-columns")
+    );
+  }
 
-    for (let i = 0; i < panel_amt; i++) {
+  // Returns panel padding according to current board size.
+  getPanelPadding() {
+    switch (this.boardsize) {
+      case BOARD_SIZES.SMALL:
+        return "0.5em";
+      case BOARD_SIZES.MEDIUM:
+        return "0.2em";
+      case BOARD_SIZES.LARGE:
+        return "0.1em";
+      default:
+        return "0.5em";
+    }
+  }
+
+  // Removes any old panels and adds new ones to board
+  // NOTE: do not call outside GameBoard! Use newGame instead.
+  setupPanels() {
+    let panelcount = this.boardsize * this.boardsize;
+
+    this.removePanels();
+
+    for (let i = 0; i < panelcount; i++) {
       this.addPanel("panel_" + i.toString());
     }
 
@@ -41,7 +78,7 @@ export default class GameBoard {
     this.contents = [];
 
     // Push each possible value in twice
-    for (let i = 0; i < panel_amt / 2; i++) {
+    for (let i = 0; i < panelcount / 2; i++) {
       this.contents.push(i);
       this.contents.push(i);
     }
@@ -50,13 +87,38 @@ export default class GameBoard {
     this.contents = shuffle(this.contents);
   }
 
+  // Removes all panels from board
+  removePanels() {
+    let board = this.board; // To make sure no this-confusion happens in lambda
+    let panels = this.board.getElementsByClassName("game_panel");
+    for (const panel of panels) {
+      board.removeChild(panel);
+    }
+  }
+
   // A function that adds a panel to the gameboard under the given id
   addPanel(panel_id) {
     var panel_temp = document.getElementsByTagName("template")[0];
     var panelfrag = panel_temp.content.cloneNode(true);
     var panel = panelfrag.querySelector("button");
-    panel.setAttribute("id", panel_id.toString()); // Give panel its id
+    panel.setAttribute("id", panel_id.toString()); // Give panel its
+    panel.classList.add(this.getPanelClass()); // Size class
     this.board.appendChild(panelfrag);
+  }
+
+  // Returns correct panel class for the current board size.
+  // If no board size is defined, default to small.
+  getPanelClass() {
+    switch (this.boardsize) {
+      case BOARD_SIZES.SMALL:
+        return ".small";
+      case BOARD_SIZES.MEDIUM:
+        return ".medium";
+      case BOARD_SIZES.LARGE:
+        return ".large";
+      default:
+        return ".small";
+    }
   }
 
   flipPanel(panel_id) {
@@ -71,6 +133,10 @@ export default class GameBoard {
       console.log(
         "First panel flipped! Its value was " + this.getPanelValue(panel_id)
       );
+      // Mark game as started if it's not already
+      if (!this.gameStarted) {
+        this.gameStarted = true;
+      }
     } else {
       // If this is the second panel to be selected
       console.log(

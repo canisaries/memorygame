@@ -10,8 +10,8 @@ document.getElementById("script_text").innerHTML = `
 const docboard = document.getElementById("game_board");
 // Give it to GameBoard object
 let board = new GameBoard(docboard);
-// Start new game with small board size
-board.newGame(BOARD_SIZES.SMALL);
+// Start new game with some board size
+board.newGame(BOARD_SIZES.MEDIUM);
 
 // TODO:
 // - other board sizes (css + button functionalities)

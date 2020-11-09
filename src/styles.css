@@ -47,21 +47,41 @@ header {
 
 #game_board {
   background-color: white;
-  height: 20em;
-  width: 20em;
+  height: 24em;
+  width: 24em;
 
-  border-radius: 0.5em;
+  border-radius: 0.2em;
   padding: 0.5em;
 
-  /*Grid layout definition - change number of repeats
-  in grid-template-columns from JS when board size changed*/
+  /* Grid layout definition */
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(
+    6,
+    1fr
+  ); /* changed in JS when board size changes */
   align-items: center;
   justify-items: center;
 }
 
+/* TODO: panel style (regardless of size) */
 .game_panel {
-  height: 5em;
-  width: 5em;
+  height: 4em;
+  width: 4em;
+}
+
+/* Different size settings for panels */
+
+.game_panel.small {
+  height: 6em;
+  width: 6em;
+}
+
+.game_panel.medium {
+  height: 4em;
+  width: 4em;
+}
+
+.game_panel.large {
+  height: 3.2em;
+  width: 3.2em;
 }
