@@ -1,5 +1,6 @@
 // Class GameBoard that represents the game board.
 // Handles panel actions and stores their states.
+// Initialized with container of board.
 
 // Enum for board sizes (side length)
 export const BOARD_SIZES = {
@@ -30,41 +31,17 @@ export default class GameBoard {
   newGame(size) {
     this.gameStarted = false;
     this.boardsize = size;
-    this.updateBoardCSS();
+    this.setupBoard();
     this.setupPanels();
   }
 
-  // Updates board CSS according to current size.
-  updateBoardCSS() {
-    // DEBUG
-    console.log("updateBoardCSS called! Board size: " + this.boardsize);
-    this.board.setAttribute(
-      "grid-template-columns",
-      `repeat(${this.boardsize}, 1fr)`
-    );
-    // DEBUG
-    console.log(
-      "updateBoardCSS called! Board size: " +
-        this.board.getAttribute("grid-template-columns")
-    );
-  }
-
-  // Returns panel padding according to current board size.
-  getPanelPadding() {
-    switch (this.boardsize) {
-      case BOARD_SIZES.SMALL:
-        return "0.5em";
-      case BOARD_SIZES.MEDIUM:
-        return "0.2em";
-      case BOARD_SIZES.LARGE:
-        return "0.1em";
-      default:
-        return "0.5em";
-    }
+  // Modify board to apply size rules (panel arrangement)
+  setupBoard() {
+    console.log("setupBoard called! Board size: " + this.boardsize);
+    this.board.style.gridTemplateColumns = `repeat(${this.boardsize}, 1fr)`;
   }
 
   // Removes any old panels and adds new ones to board
-  // NOTE: do not call outside GameBoard! Use newGame instead.
   setupPanels() {
     let panelcount = this.boardsize * this.boardsize;
 
@@ -111,13 +88,13 @@ export default class GameBoard {
   getPanelClass() {
     switch (this.boardsize) {
       case BOARD_SIZES.SMALL:
-        return ".small";
+        return "small";
       case BOARD_SIZES.MEDIUM:
-        return ".medium";
+        return "medium";
       case BOARD_SIZES.LARGE:
-        return ".large";
+        return "large";
       default:
-        return ".small";
+        return "small";
     }
   }
 

@@ -55,19 +55,14 @@ header {
 
   /* Grid layout definition */
   display: grid;
-  grid-template-columns: repeat(
-    6,
-    1fr
-  ); /* changed in JS when board size changes */
+  grid-template-columns: repeat(4, 1fr);
   align-items: center;
   justify-items: center;
 }
 
-/* TODO: panel style (regardless of size) */
+/* TODO: panel style (regardless of size) 
 .game_panel {
-  height: 4em;
-  width: 4em;
-}
+}*/
 
 /* Different size settings for panels */
 
