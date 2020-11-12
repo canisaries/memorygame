@@ -11,7 +11,7 @@ export const BOARD_SIZES = {
 
 export default class GameBoard {
   constructor(board) {
-    this.board = board;
+    this.board = board; // Board element
     this.boardsize = BOARD_SIZES.SMALL; // Default size
     this.selectedPanel = null; // Currently selected panel
     this.gameStarted = false; // If game was started or not
@@ -66,10 +66,11 @@ export default class GameBoard {
 
   // Removes all panels from board
   removePanels() {
-    let board = this.board; // To make sure no this-confusion happens in lambda
     let panels = this.board.getElementsByClassName("game_panel");
-    for (const panel of panels) {
-      board.removeChild(panel);
+    console.log("removePanels DEBUG: Amount of panels: " + panels.length);
+
+    while (panels[0]) {
+      this.board.removeChild(panels[0]);
     }
   }
 
