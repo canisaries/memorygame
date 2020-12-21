@@ -24,9 +24,10 @@ board.newGame(BOARD_SIZES.SMALL);
 // Executable script ends here.
 
 // TODO-LIST:
+// - showing actual panel value when clicked
+// (give buttons the char values, not just numbers)
+// - button click animation
 // - confirming decision to start new game if old game already started
-// - showing panel value when clicked (hold a bit on second before advancing!)
-// - making matched panels unclickable (and showing their values permanently)
 // - timer? score? other fun stuff
 // - fancier graphics
 

@@ -60,23 +60,59 @@ header {
   justify-items: center;
 }
 
-/* TODO: panel style (regardless of size) 
+/* Game panel style (regardless of size) */
 .game_panel {
-}*/
+  color: white;
+  background-color: lightgray;
+  border-color: lightgray;
+  border-radius: 15%;
+  border-style: outset;
+  font-weight: bold;
+  font-family: sans-serif;
+  text-align: center;
+
+  /* This centers text*/
+  display: grid;
+  align-items: center;
+}
+
+.game_panel:hover {
+  background-color: gray;
+  border-color: gray;
+}
+
+/* Opened panel */
+.game_panel.opened {
+  background-color: gray;
+  border-color: gray;
+}
+
+/* Text under button is invisible unless opened */
+.panel_text {
+  display: none;
+}
+
+/* Text under opened button is made visible */
+.game_panel.opened > .panel_text {
+  display: inline;
+}
 
 /* Different size settings for panels */
 
 .game_panel.small {
-  height: 6em;
-  width: 6em;
+  font-size: 3em;
+  height: 1.5em;
+  width: 1.5em;
 }
 
 .game_panel.medium {
-  height: 4em;
-  width: 4em;
+  font-size: 1.5em;
+  height: 2em;
+  width: 2em;
 }
 
 .game_panel.large {
-  height: 3.2em;
-  width: 3.2em;
+  font-size: 1em;
+  height: 2em;
+  width: 2em;
 }
