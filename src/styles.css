@@ -83,8 +83,8 @@ header {
 
 /* Opened panel */
 .game_panel.opened {
-  background-color: gray;
-  border-color: gray;
+  background-color: darkgray;
+  border-color: darkgray;
 }
 
 /* Text under button is invisible unless opened */

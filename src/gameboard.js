@@ -10,9 +10,9 @@ export const BOARD_SIZES = {
 };
 
 // Panel values for different lists
-const PANEL_VALUES_SMALL = ["A", "B", "C", "D", "E", "F", "G", "H"];
-const PANEL_VALUES_MEDIUM = [
-  ...PANEL_VALUES_SMALL,
+const SYMBOLS_SMALL = ["A", "B", "C", "D", "E", "F", "G", "H"];
+const SYMBOLS_MEDIUM = [
+  ...SYMBOLS_SMALL,
   "I",
   "J",
   "K",
@@ -24,8 +24,8 @@ const PANEL_VALUES_MEDIUM = [
   "Q",
   "R"
 ];
-const PANEL_VALUES_LARGE = [
-  ...PANEL_VALUES_MEDIUM,
+const SYMBOLS_LARGE = [
+  ...SYMBOLS_MEDIUM,
   "S",
   "T",
   "U",
@@ -42,6 +42,9 @@ const PANEL_VALUES_LARGE = [
   "#"
 ];
 
+// Short wait time (milliseconds)
+const SHORT_WAIT_TIME = 750;
+
 export default class GameBoard {
   constructor(board) {
     this.board = board; // Board element
@@ -49,6 +52,7 @@ export default class GameBoard {
     this.selectedPanel = null; // Currently selected panel
     this.gameStarted = false; // If game was started or not
     // (to decide whether to make player confirm their request to start a new game)
+    this.matches = 0; // How many matches player has made
 
     this.acceptFlips = true; // Whether flips are accepted
 
@@ -62,14 +66,15 @@ export default class GameBoard {
     });
 
     // DEBUG: CHECK PANEL VALUE LIST LENGTHS
-    console.log("Small list: " + PANEL_VALUES_SMALL.length); // 8
-    console.log("Medium list: " + PANEL_VALUES_MEDIUM.length); // 18
-    console.log("Large list: " + PANEL_VALUES_LARGE.length); // 32
+    console.log("Small list: " + SYMBOLS_SMALL.length); // 8
+    console.log("Medium list: " + SYMBOLS_MEDIUM.length); // 18
+    console.log("Large list: " + SYMBOLS_LARGE.length); // 32
   }
 
   // Sets up a new game.
   newGame(size) {
     this.gameStarted = false;
+    this.matches = 0;
     this.boardsize = size;
     this.setupBoard();
     this.setupPanels();
@@ -85,24 +90,38 @@ export default class GameBoard {
   setupPanels() {
     let panelcount = this.boardsize * this.boardsize;
 
+    // Remove old panels
     this.removePanels();
-
-    for (let i = 0; i < panelcount; i++) {
-      this.addPanel("panel_" + i.toString());
-    }
 
     // Create contents array
     this.contents = [];
 
-    // TODO: HAVE THIS USE THE CHARS FROM THE CONST LISTS
-    // Push each possible value in twice
-    for (let i = 0; i < panelcount / 2; i++) {
-      this.contents.push(i);
-      this.contents.push(i);
+    // Get symbol list corresponding to board size TODO
+    let symbols = this.getSymbols();
+
+    // Assure that the charlist length * 2 matches the panel count.
+    // If it does not, log error and return.
+    if (symbols.length * 2 !== panelcount) {
+      console.log(
+        "setupPanels ERROR: Symbol list length multiplied by 2 does not equal panel count."
+      );
+    }
+
+    console.log("setupPanels DEBUG: Correct amount of symbols. Good to go.");
+
+    // Push two of each symbol into contents
+    for (const symbol of symbols) {
+      this.contents.push(symbol);
+      this.contents.push(symbol);
     }
 
     // Shuffle array
     this.contents = shuffle(this.contents);
+
+    // Create panels, give them the symbols
+    for (let i = 0; i < panelcount; i++) {
+      this.addPanel("panel_" + i.toString(), this.contents[i]);
+    }
   }
 
   // Removes all panels from board
@@ -115,13 +134,23 @@ export default class GameBoard {
     }
   }
 
-  // A function that adds a panel to the gameboard under the given id
-  addPanel(panel_id) {
+  // A function that adds a panel to the gameboard under the given id and symbol
+  addPanel(panel_id, symbol) {
+    // Create panel from template
     var panel_temp = document.getElementsByTagName("template")[0];
     var panelfrag = panel_temp.content.cloneNode(true);
     var panel = panelfrag.querySelector(".game_panel");
-    panel.setAttribute("id", panel_id.toString()); // Give panel its
-    panel.classList.add(this.getPanelClass()); // Size class
+
+    // Set panel ID
+    panel.setAttribute("id", panel_id.toString());
+
+    // Set panel content
+    panel.querySelector(".panel_text").innerHTML = symbol;
+
+    // Set size class
+    panel.classList.add(this.getPanelClass());
+
+    // Append to board
     this.board.appendChild(panelfrag);
   }
 
@@ -137,6 +166,21 @@ export default class GameBoard {
         return "large";
       default:
         return "small";
+    }
+  }
+
+  // Returns correct symbol list for the current board size.
+  // If no board size is defined, default to small.
+  getSymbols() {
+    switch (this.boardsize) {
+      case BOARD_SIZES.SMALL:
+        return SYMBOLS_SMALL;
+      case BOARD_SIZES.MEDIUM:
+        return SYMBOLS_MEDIUM;
+      case BOARD_SIZES.LARGE:
+        return SYMBOLS_LARGE;
+      default:
+        return SYMBOLS_SMALL;
     }
   }
 
@@ -182,31 +226,60 @@ export default class GameBoard {
       // Mark panel as opened
       panel.classList.add("opened");
 
-      // DO NOT TAKE CLICKS WHILE CHECK IN PROGRESS TODO
-
+      // DO NOT ACCEPT PANEL FLIPS WHILE CHECK IN PROGRESS
       this.acceptFlips = false;
 
-      setTimeout(() => {
-        // If values don't match, close both panels
-        if (!this.checkMatch(this.selectedPanel.id, panel.id)) {
-          panel.classList.remove("opened");
-          this.selectedPanel.classList.remove("opened");
-        }
+      // If there is no match, keep buttons open for a while and then close.
+      // If there is a match, mark a match and disable both buttons. They will remain open.
+      if (!this.checkMatch(this.selectedPanel.id, panel.id)) {
+        // Set timeout for short wait time, when time is up close panels
+        // and accept flips again
 
-        this.selectedPanel = null; // Reset selection regardless of match
-        this.acceptFlips = true; // Accept flips again
-      }, 750);
+        // Alias parameter to avoid this-confusion
+        let selpanel = this.selectedPanel;
+
+        setTimeout(() => {
+          // Close both panels
+          selpanel.classList.remove("opened");
+          panel.classList.remove("opened");
+
+          // Accept flips again
+          this.acceptFlips = true;
+        }, SHORT_WAIT_TIME);
+      } else {
+        // Mark a match
+        this.matches++;
+
+        // Disable both buttons (they will remain open)
+        this.selectedPanel.disabled = true;
+        panel.disabled = true;
+
+        // Accept flips
+        this.acceptFlips = true;
+      }
+
+      this.selectedPanel = null; // Reset selection regardless of match
+
+      // Check win condition
+      if (this.matches === (this.boardsize * this.boardsize) / 2) {
+        console.log("CURRENT MATCHES, TOTAL MATCHES:");
+        console.log(this.matches);
+        console.log((this.boardsize * this.boardsize) / 2);
+
+        console.log("All matches found!");
+        // TODO something else
+      }
     }
   }
 
-  // Check whether given panels match, act accordingly
+  // Check whether given panels match
   checkMatch(panel1, panel2) {
-    // TODO ANIMATION OR WHATEVER AND DISABLING BUTTONS
     if (this.getPanelValue(panel1) === this.getPanelValue(panel2)) {
       console.log("Match found!");
-      // Disable both buttons
+      return true;
     } else {
       console.log("No match. Try again.");
+      return false;
     }
   }
 
