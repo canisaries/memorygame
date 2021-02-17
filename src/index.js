@@ -2,10 +2,6 @@ import "./styles.css";
 import GameBoard from "./gameboard.js";
 import { BOARD_SIZES } from "./gameboard.js";
 
-document.getElementById("script_text").innerHTML = `
-<p>this is the contents of the element "script_text", set to be this way from index.js</p>
-`;
-
 // Add event listeners to size option buttons
 let sizebuttons = document.getElementsByClassName("size_option_button");
 for (const btn of sizebuttons) {
@@ -24,9 +20,12 @@ board.newGame(BOARD_SIZES.SMALL);
 // Executable script ends here.
 
 // TODO-LIST:
-// - have something nice happen when the game is won
-// - button click animation
+// - overlay text for messages and warnings!
+// - winning message
+// - click to begin
 // - confirming decision to start new game if old game already started
+// - prevent hover and click effects when showing if pair is correct
+// - color change for matching and non matching pairs?
 // - timer? score? other fun stuff
 // - fancier graphics?
 

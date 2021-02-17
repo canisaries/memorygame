@@ -30,14 +30,22 @@
       </header>
     </div>
 
-    <!-- Text that is modified in script (just here as example) -->
-    <div id="script_text"></div>
+    <div id="game_description" class="information">
+      <p>Try to find the matching pairs.</p>
+    </div>
 
     <!-- The area in which the game board and game options will reside -->
     <div id="game_area">
       <!-- The game board which will be populated with panels -->
       <div id="game_board"></div>
       <!-- Game options (TODO) -->
+    </div>
+
+    <div id="game_status" class="information">
+      <p>
+        Time: <span id="timer">0:00:00</span> <br />
+        Pairs found: <span id="pairs_found">0</span>
+      </p>
     </div>
 
     <!-- Template for the game button!-->
