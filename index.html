@@ -37,14 +37,18 @@
     <!-- The area in which the game board and game options will reside -->
     <div id="game_area">
       <!-- The game board which will be populated with panels -->
-      <div id="game_board"></div>
-      <!-- Game options (TODO) -->
+      <div id="game_board" class="board"></div>
+
+      <!-- The overlay that will be on top of the board -->
+      <div id="game_overlay" class="board clickaway">
+        <span id="overlay_message"><span>
+      </div>
     </div>
 
     <div id="game_status" class="information">
       <p>
         Time: <span id="timer">0:00:00</span> <br />
-        Pairs found: <span id="pairs_found">0</span>
+        Pairs found: <span id="pairs_found">0 / 0</span>
       </p>
     </div>
 

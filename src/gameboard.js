@@ -46,11 +46,12 @@ const SYMBOLS_LARGE = [
 const SHORT_WAIT_TIME = 750;
 
 export default class GameBoard {
-  constructor(board) {
+  constructor(board, overlay) {
     this.board = board; // Board element
+    this.overlay = overlay; // Overlay element
     this.boardsize = BOARD_SIZES.SMALL; // Default size
     this.selectedPanel = null; // Currently selected panel
-    this.gameStarted = false; // If game was started or not
+    this.gameInProgress = false; // If game was started or not
     // (to decide whether to make player confirm their request to start a new game)
     this.matches = 0; // How many matches player has made
 
@@ -65,6 +66,18 @@ export default class GameBoard {
       }
     });
 
+    // Make overlay listen to clicks
+    this.overlay.addEventListener("click", () => {
+      //console.log("Overlay clicked!");
+
+      // If has the overlay has the clickaway class, hide it
+      if (this.overlay.classList.contains("clickaway")) {
+        this.showOverlay(false);
+      }
+
+      // TODO: how about staring timer?
+    });
+
     // DEBUG: CHECK PANEL VALUE LIST LENGTHS
     console.log("Small list: " + SYMBOLS_SMALL.length); // 8
     console.log("Medium list: " + SYMBOLS_MEDIUM.length); // 18
@@ -73,11 +86,13 @@ export default class GameBoard {
 
   // Sets up a new game.
   newGame(size) {
-    this.gameStarted = false;
+    this.gameInProgress = false;
     this.matches = 0;
     this.boardsize = size;
     this.setupBoard();
     this.setupPanels();
+    this.showOverlay(true);
+    this.setOverlayMessage("Click to Begin");
   }
 
   // Modify board to apply size rules (panel arrangement)
@@ -214,8 +229,8 @@ export default class GameBoard {
       );
 
       // Mark game as started if it's not already
-      if (!this.gameStarted) {
-        this.gameStarted = true;
+      if (!this.gameInProgress) {
+        this.gameInProgress = true;
       }
     } else {
       // If this is the second panel to be selected
@@ -228,9 +243,11 @@ export default class GameBoard {
 
       // DO NOT ACCEPT PANEL FLIPS WHILE CHECK IN PROGRESS
       this.acceptFlips = false;
+      // TODO: make this also stop hover and click effects
 
       // If there is no match, keep buttons open for a while and then close.
-      // If there is a match, mark a match and disable both buttons. They will remain open.
+      // If there is a match, mark a match and disable both buttons.
+      // They will remain open. If the game is won, show win message.
       if (!this.checkMatch(this.selectedPanel.id, panel.id)) {
         // Set timeout for short wait time, when time is up close panels
         // and accept flips again
@@ -267,7 +284,25 @@ export default class GameBoard {
         console.log((this.boardsize * this.boardsize) / 2);
 
         console.log("All matches found!");
-        // TODO something else
+
+        // Mark game as no longer being in progress
+        this.gameInProgress = false;
+
+        // Show win message
+        this.showOverlay(true);
+        this.setOverlayMessage("You Won!");
+        // Disable clicking away overlay
+        this.setOverlayClickaway(false);
+
+        // Show retry message after a while
+        setTimeout(() => {
+          // Show retry message
+          this.setOverlayMessage("Click to Try Again");
+          // Enable clicking away overlay
+          this.setOverlayClickaway(true);
+          // Accept flips (not that you can do them with the overlay on)
+          this.acceptFlips = true;
+        }, SHORT_WAIT_TIME);
       }
     }
   }
@@ -299,6 +334,39 @@ export default class GameBoard {
       return null;
     }
     return i;
+  }
+
+  // Show or hide overlay
+  showOverlay(show = true) {
+    if (show) {
+      this.overlay.classList.remove("hidden");
+    } else {
+      this.overlay.classList.add("hidden");
+    }
+  }
+
+  // Set the message text on the overlay
+  setOverlayMessage(message) {
+    // Get overlay message container
+    let msg_container = this.overlay.querySelector("#overlay_message");
+    if (msg_container === null || msg_container === undefined) {
+      console.log(
+        "setOverlayMessage ERROR: Message container was not found. Returning."
+      );
+      return;
+    }
+
+    // Set overlay message
+    msg_container.innerHTML = message;
+  }
+
+  // Toggle overlay's clickaway functionality
+  setOverlayClickaway(clickaway) {
+    if (clickaway) {
+      this.overlay.classList.add("clickaway");
+    } else {
+      this.overlay.classList.remove("clickaway");
+    }
   }
 }
 

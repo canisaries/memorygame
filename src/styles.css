@@ -63,19 +63,58 @@ informational. */
   border-radius: 0.5em;
 }
 
-#game_board {
-  background-color: white;
+/* This class defines the board shape and dimensions */
+.board {
   height: 24em;
   width: 24em;
 
   border-radius: 0.5em;
   padding: 0.5em;
+}
+
+#game_board {
+  background-color: white;
 
   /* Grid layout definition */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: center;
   justify-items: center;
+}
+
+#game_overlay {
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  position: absolute;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+#game_overlay.clickaway:hover {
+  background: none rgba(255, 255, 255, 0.8);
+}
+
+/* The clickaway class means that the element can be
+clicked into hiding */
+#game_overlay.clickaway {
+  cursor: pointer;
+}
+
+#overlay_message {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+/* If overlay is hidden */
+#game_overlay.hidden {
+  display: none;
 }
 
 /* Game panel style (regardless of size) */

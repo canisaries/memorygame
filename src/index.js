@@ -3,6 +3,7 @@ import GameBoard from "./gameboard.js";
 import { BOARD_SIZES } from "./gameboard.js";
 
 // Add event listeners to size option buttons
+// TODO: shouldn't this be in gameboard?
 let sizebuttons = document.getElementsByClassName("size_option_button");
 for (const btn of sizebuttons) {
   btn.addEventListener("click", (e) => {
@@ -10,24 +11,25 @@ for (const btn of sizebuttons) {
   });
 }
 
+// Get overlay
+let overlay = document.getElementById("game_overlay");
+
 // Get game board element
 const boardelem = document.getElementById("game_board");
 // Create GameBoard object
-let board = new GameBoard(boardelem);
+let board = new GameBoard(boardelem, overlay);
 // Start new game with some board size
 board.newGame(BOARD_SIZES.SMALL);
 
 // Executable script ends here.
 
 // TODO-LIST:
-// - overlay text for messages and warnings!
-// - winning message
-// - click to begin
+// - clicking overlay after winning actually restarts the game like it says
 // - confirming decision to start new game if old game already started
+// - score
 // - prevent hover and click effects when showing if pair is correct
+// - timer
 // - color change for matching and non matching pairs?
-// - timer? score? other fun stuff
-// - fancier graphics?
 
 // Function definitions begin here.
 
@@ -57,7 +59,7 @@ function changeBoardSize(btn_id) {
 
   // If the game has already been started, ask user for confirmation on
   // starting a new game
-  if (board.gameStarted) {
+  if (board.gameInProgress) {
     // TODO
     console.log(
       "changeBoardSize DEBUG: Game already started, but confirmation has not yet been implemented."
