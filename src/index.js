@@ -2,38 +2,39 @@ import "./styles.css";
 import GameBoard from "./gameboard.js";
 import { BOARD_SIZES } from "./gameboard.js";
 
-// Add event listeners to size option buttons
-// TODO: shouldn't this be in gameboard?
-let sizebuttons = document.getElementsByClassName("size_option_button");
-for (const btn of sizebuttons) {
-  btn.addEventListener("click", (e) => {
-    changeBoardSize(e.target.id);
-  });
-}
-
 // Get overlay
 let overlay = document.getElementById("game_overlay");
 
 // Get game board element
 const boardelem = document.getElementById("game_board");
 // Create GameBoard object
-let board = new GameBoard(boardelem, overlay);
+let gameboard = new GameBoard(boardelem, overlay);
 // Start new game with some board size
-board.newGame(BOARD_SIZES.SMALL);
+gameboard.newGame(BOARD_SIZES.SMALL);
+
+// Add event listeners to size option buttons
+let sizebuttons = document.getElementsByClassName("size_option_button");
+for (const btn of sizebuttons) {
+  btn.addEventListener("click", (e) => {
+    changeBoardSize(e.target.id, gameboard);
+  });
+}
+
+// Add event listener to win button TODO
 
 // Executable script ends here.
 
 // TODO-LIST:
 // - clicking overlay after winning actually restarts the game like it says
 // - confirming decision to start new game if old game already started
-// - score
+// - score (pairs)
 // - prevent hover and click effects when showing if pair is correct
 // - timer
 // - color change for matching and non matching pairs?
 
 // Function definitions begin here.
 
-function changeBoardSize(btn_id) {
+function changeBoardSize(btn_id, board) {
   let size = null;
 
   // Get size from button

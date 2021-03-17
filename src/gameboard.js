@@ -42,8 +42,18 @@ const SYMBOLS_LARGE = [
   "#"
 ];
 
+// Enum for game states
+const GAMESTATE = {
+  NOT_STARTED: 0,
+  ONGOING: 1,
+  WIN: 2
+};
+
 // Short wait time (milliseconds)
 const SHORT_WAIT_TIME = 750;
+
+// Long wait time (milliseconds)
+const LONG_WAIT_TIME = 1250;
 
 export default class GameBoard {
   constructor(board, overlay) {
@@ -51,14 +61,17 @@ export default class GameBoard {
     this.overlay = overlay; // Overlay element
     this.boardsize = BOARD_SIZES.SMALL; // Default size
     this.selectedPanel = null; // Currently selected panel
-    this.gameInProgress = false; // If game was started or not
+    this.gamestate = GAMESTATE.NOT_STARTED;
     // (to decide whether to make player confirm their request to start a new game)
     this.matches = 0; // How many matches player has made
 
-    this.acceptFlips = true; // Whether flips are accepted
+    this.acceptFlips = false; // Whether flips are accepted
+
+    // Variable that points to the board,
+    // used in event handler anon funcs
+    let thisobj = this;
 
     // Make game board listen to clicks
-    let thisobj = this; // Workaround to allow self-reference in anon func
     this.board.addEventListener("click", function (e) {
       // e.target is the clicked element, check if it's a panel
       if (e.target && e.target.matches(".game_panel")) {
@@ -68,14 +81,7 @@ export default class GameBoard {
 
     // Make overlay listen to clicks
     this.overlay.addEventListener("click", () => {
-      //console.log("Overlay clicked!");
-
-      // If has the overlay has the clickaway class, hide it
-      if (this.overlay.classList.contains("clickaway")) {
-        this.showOverlay(false);
-      }
-
-      // TODO: how about staring timer?
+      thisobj.overlayClicked();
     });
 
     // DEBUG: CHECK PANEL VALUE LIST LENGTHS
@@ -84,9 +90,27 @@ export default class GameBoard {
     console.log("Large list: " + SYMBOLS_LARGE.length); // 32
   }
 
+  // The function called when the overlay is clicked.
+  overlayClicked() {
+    console.log("Overlay clicked!");
+
+    // If the overlay can't be clicked away, return without change
+    if (!this.overlay.classList.contains("clickaway")) {
+      return;
+    }
+
+    // If this is the "Click to Begin" overlay, have click start the game
+    if (this.gamestate === GAMESTATE.NOT_STARTED) {
+      this.start();
+    }
+
+    // Hide overlay
+    this.showOverlay(false);
+  }
+
   // Sets up a new game.
   newGame(size) {
-    this.gameInProgress = false;
+    this.gamestate = GAMESTATE.NOT_STARTED;
     this.matches = 0;
     this.boardsize = size;
     this.setupBoard();
@@ -169,6 +193,14 @@ export default class GameBoard {
     this.board.appendChild(panelfrag);
   }
 
+  // Start the game aka change to ONGOING state,
+  // enable flips and start the timer.
+  start() {
+    this.gamestate = GAMESTATE.ONGOING;
+    this.acceptFlips = true;
+    // TODO start timer!
+  }
+
   // Returns correct panel class for the current board size.
   // If no board size is defined, default to small.
   getPanelClass() {
@@ -201,7 +233,7 @@ export default class GameBoard {
 
   async flipPanel(panel) {
     if (!this.acceptFlips) {
-      console.log("Too quick!");
+      console.log("Flips aren't accepted yet.");
       return;
     }
 
@@ -227,11 +259,6 @@ export default class GameBoard {
       console.log(
         "First panel flipped! Its value was " + this.getPanelValue(panel.id)
       );
-
-      // Mark game as started if it's not already
-      if (!this.gameInProgress) {
-        this.gameInProgress = true;
-      }
     } else {
       // If this is the second panel to be selected
       console.log(
@@ -285,12 +312,11 @@ export default class GameBoard {
 
         console.log("All matches found!");
 
-        // Mark game as no longer being in progress
-        this.gameInProgress = false;
+        // Set game to Win state
+        this.gamestate = GAMESTATE.WIN;
 
         // Show win message
-        this.showOverlay(true);
-        this.setOverlayMessage("You Won!");
+        this.showOverlay(true, "You Won!");
         // Disable clicking away overlay
         this.setOverlayClickaway(false);
 
@@ -302,7 +328,7 @@ export default class GameBoard {
           this.setOverlayClickaway(true);
           // Accept flips (not that you can do them with the overlay on)
           this.acceptFlips = true;
-        }, SHORT_WAIT_TIME);
+        }, LONG_WAIT_TIME);
       }
     }
   }
@@ -336,16 +362,21 @@ export default class GameBoard {
     return i;
   }
 
-  // Show or hide overlay
-  showOverlay(show = true) {
+  // Show or hide overlay. If message included, update it
+  showOverlay(show = true, message = null) {
     if (show) {
       this.overlay.classList.remove("hidden");
     } else {
       this.overlay.classList.add("hidden");
     }
+
+    if (message !== null) {
+      this.setOverlayMessage(message);
+    }
   }
 
-  // Set the message text on the overlay
+  // Set the message text on the overlay.
+  // Does not change overlay visibility.
   setOverlayMessage(message) {
     // Get overlay message container
     let msg_container = this.overlay.querySelector("#overlay_message");
