@@ -21,11 +21,14 @@ for (const btn of sizebuttons) {
 }
 
 // Add event listener to win button TODO
+let winbutton = document.getElementById("win_button");
+winbutton.addEventListener("click", () => {
+  gameboard.win();
+});
 
 // Executable script ends here.
 
 // TODO-LIST:
-// - clicking overlay after winning actually restarts the game like it says
 // - confirming decision to start new game if old game already started
 // - score (pairs)
 // - prevent hover and click effects when showing if pair is correct

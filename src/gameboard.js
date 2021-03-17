@@ -84,6 +84,9 @@ export default class GameBoard {
       thisobj.overlayClicked();
     });
 
+    // Set overlay to visible with the message "Click to Begin".
+    this.showOverlay(true, "Click to Begin");
+
     // DEBUG: CHECK PANEL VALUE LIST LENGTHS
     console.log("Small list: " + SYMBOLS_SMALL.length); // 8
     console.log("Medium list: " + SYMBOLS_MEDIUM.length); // 18
@@ -99,9 +102,18 @@ export default class GameBoard {
       return;
     }
 
-    // If this is the "Click to Begin" overlay, have click start the game
+    // Functiionality based on game state
     if (this.gamestate === GAMESTATE.NOT_STARTED) {
+      // If this is the "Click to Begin" overlay, start the game
       this.start();
+    } else if (this.gamestate === GAMESTATE.WIN) {
+      // If this is the "Click to Play Again" overlay, start a new game
+      this.newGame(this.boardsize);
+    } else {
+      console.log(
+        "overlayClicked ERROR: Called in unsupported game state. Returning."
+      );
+      return;
     }
 
     // Hide overlay
@@ -115,8 +127,6 @@ export default class GameBoard {
     this.boardsize = size;
     this.setupBoard();
     this.setupPanels();
-    this.showOverlay(true);
-    this.setOverlayMessage("Click to Begin");
   }
 
   // Modify board to apply size rules (panel arrangement)
@@ -312,25 +322,28 @@ export default class GameBoard {
 
         console.log("All matches found!");
 
-        // Set game to Win state
-        this.gamestate = GAMESTATE.WIN;
-
-        // Show win message
-        this.showOverlay(true, "You Won!");
-        // Disable clicking away overlay
-        this.setOverlayClickaway(false);
-
-        // Show retry message after a while
-        setTimeout(() => {
-          // Show retry message
-          this.setOverlayMessage("Click to Try Again");
-          // Enable clicking away overlay
-          this.setOverlayClickaway(true);
-          // Accept flips (not that you can do them with the overlay on)
-          this.acceptFlips = true;
-        }, LONG_WAIT_TIME);
+        // Win
+        this.win();
       }
     }
+  }
+
+  win() {
+    // Set game to Win state
+    this.gamestate = GAMESTATE.WIN;
+
+    // Show win message
+    this.showOverlay(true, "You Won!");
+    // Disable clicking away overlay
+    this.setOverlayClickaway(false);
+
+    // Show retry message after a while
+    setTimeout(() => {
+      // Show retry message
+      this.setOverlayMessage("Click to Try Again");
+      // Enable clicking away overlay
+      this.setOverlayClickaway(true);
+    }, LONG_WAIT_TIME);
   }
 
   // Check whether given panels match
