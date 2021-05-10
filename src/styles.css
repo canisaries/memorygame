@@ -34,7 +34,71 @@ header {
 
 #size_options ul:hover {
   color: white;
-  background: gray;
+  background-color: gray;
+}
+
+#size_options ul:active {
+  color: white;
+  background-color: #404040;
+}
+
+/* The notification class is reserved for notifications appearing within
+the header, under the title and size options. */
+.notification {
+  background-color: #404040;
+  border-radius: 0.5em;
+  margin: 0;
+  margin-top: 0.6em;
+  padding: 0.2em 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification.hidden {
+  display: none;
+}
+
+.notif-text {
+  color: lightgray;
+  padding: 0 1em;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.notif-button-container {
+  margin: 0 0.3em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.notif-button {
+  background-color: lightgray;
+  color: #404040;
+
+  padding: 0.2em 0.8em;
+  margin: 0.3em 0.3em;
+
+  border-color: lightgray;
+  border-radius: 0.3em;
+  border-width: 0.15em;
+  border-style: solid;
+
+  font-family: sans-serif;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.notif-button:hover {
+  background-color: gray;
+  border-color: gray;
+  color: white;
+}
+
+.notif-button:active {
+  background-color: #404040;
+  border-color: #404040;
+  color: white;
 }
 
 /* The information class means that the element's contents are

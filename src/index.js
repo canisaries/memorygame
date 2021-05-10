@@ -62,9 +62,8 @@ function changeBoardSize(btn_id, board) {
   }
 
   // If the game has already been started, ask user for confirmation on
-  // starting a new game
+  // starting a new game.
   if (board.gameInProgress) {
-    // TODO
     console.log(
       "changeBoardSize DEBUG: Game already started, but confirmation has not yet been implemented."
     );
