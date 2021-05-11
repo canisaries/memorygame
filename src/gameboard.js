@@ -84,9 +84,6 @@ export default class GameBoard {
       thisobj.overlayClicked();
     });
 
-    // Set overlay to visible with the message "Click to Begin".
-    this.showOverlay(true, "Click to Begin");
-
     // DEBUG: CHECK PANEL VALUE LIST LENGTHS
     console.log("Small list: " + SYMBOLS_SMALL.length); // 8
     console.log("Medium list: " + SYMBOLS_MEDIUM.length); // 18
@@ -120,13 +117,14 @@ export default class GameBoard {
     this.showOverlay(false);
   }
 
-  // Sets up a new game.
+  // Sets up a new game in a pre-start state.
   newGame(size) {
     this.gamestate = GAMESTATE.NOT_STARTED;
     this.matches = 0;
     this.boardsize = size;
     this.setupBoard();
     this.setupPanels();
+    this.showOverlay(true, "Click to Begin");
   }
 
   // Modify board to apply size rules (panel arrangement)
@@ -340,7 +338,7 @@ export default class GameBoard {
     // Show retry message after a while
     setTimeout(() => {
       // Show retry message
-      this.setOverlayMessage("Click to Try Again");
+      this.setOverlayMessage("Click to Play Again");
       // Enable clicking away overlay
       this.setOverlayClickaway(true);
     }, LONG_WAIT_TIME);
@@ -410,6 +408,15 @@ export default class GameBoard {
       this.overlay.classList.add("clickaway");
     } else {
       this.overlay.classList.remove("clickaway");
+    }
+  }
+
+  // Return whether there is a game in progress
+  gameInProgress() {
+    if (this.gamestate === GAMESTATE.ONGOING) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
