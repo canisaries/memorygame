@@ -7,7 +7,9 @@ let overlay = document.getElementById("game_overlay");
 // Get game board element
 const boardelem = document.getElementById("game_board");
 // Create GameBoard object
-let gameboard = new GameBoard(boardelem, overlay);
+let gameboard = new GameBoard(boardelem);
+// Pass the overlay element to the board
+gameboard.setOverlay(overlay);
 
 // Start new game with some board size
 gameboard.newGame(BOARD_SIZES.SMALL);
@@ -45,7 +47,7 @@ let confirmRestartNoBtn = document.getElementById("confirm-restart-no");
 // The Yes button requests to restart the game with the
 // currently chosen side and hides the notification
 confirmRestartYesBtn.addEventListener("click", () => {
-  console.log("YES BUTTON CLICKED");
+  console.log("YES-BUTTON CLICKED");
 
   showNotification(confirmRestartNotif, false);
 
@@ -55,7 +57,7 @@ confirmRestartYesBtn.addEventListener("click", () => {
 
 // The No button hides the notification
 confirmRestartNoBtn.addEventListener("click", () => {
-  console.log("NO BUTTON CLICKED");
+  console.log("NO-BUTTON CLICKED");
   showNotification(confirmRestartNotif, false);
 });
 

@@ -31,20 +31,22 @@
 
       <!-- Notification to confirm restart (hidden by default) -->
       <div id="confirm-restart" class="notification hidden">
-        <span class="notif-text">There is an ongoing game. Are you sure you want to start a new one?</span>
+        <span class="notif-text"
+          >There is an ongoing game. Are you sure you want to start a new
+          one?</span
+        >
         <div class="notif-button-container">
           <button id="confirm-restart-yes" class="notif-button">Yes</button>
           <button id="confirm-restart-no" class="notif-button">No</button>
         </div>
       </div>
-
     </div>
 
     <div id="game_description" class="information">
       <p>Try to find the matching pairs.</p>
     </div>
 
-    <!-- The area in which the game board and game options will reside -->
+    <!-- The area in which the game board will reside -->
     <div id="game_area">
       <!-- The game board which will be populated with panels -->
       <div id="game_board" class="board"></div>
@@ -55,11 +57,14 @@
       </div>
     </div>
 
-    <div id="game_status" class="information">
+    <!-- Area displaying stats related to the game -->
+    <div id="game_stats" class="information">
       <p>
         Time: <span id="timer">0:00:00</span> <br />
         Pairs found: <span id="pairs_found">0 / 0</span> <br />
-        <button id="win_button">Win</button> <!-- An automatic win button for testing -->
+        Mistakes: <span id="pairs_found">0</span> <br />
+        <button id="win_button">Win</button>
+        <!-- An automatic win button for testing -->
       </p>
     </div>
 

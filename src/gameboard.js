@@ -56,18 +56,22 @@ const SHORT_WAIT_TIME = 750;
 const LONG_WAIT_TIME = 1250;
 
 export default class GameBoard {
-  constructor(board, overlay) {
+  constructor(board) {
     this.board = board; // Board element
-    this.overlay = overlay; // Overlay element
+    this.overlay = null; // Overlay element
+
     this.boardsize = BOARD_SIZES.SMALL; // Default size
-    this.selectedPanel = null; // Currently selected panel
+
     this.gamestate = GAMESTATE.NOT_STARTED;
-    // (to decide whether to make player confirm their request to start a new game)
+
+    this.selectedPanel = null; // Currently selected panel
+
     this.matches = 0; // How many matches player has made
+    this.mistakes = 0; // How many mistakes player has made
 
     this.acceptFlips = false; // Whether flips are accepted
 
-    // Variable that points to the board,
+    // Variable that unambiguously points to the board,
     // used in event handler anon funcs
     let thisobj = this;
 
@@ -79,20 +83,28 @@ export default class GameBoard {
       }
     });
 
-    // Make overlay listen to clicks
-    this.overlay.addEventListener("click", () => {
-      thisobj.overlayClicked();
-    });
-
     // DEBUG: CHECK PANEL VALUE LIST LENGTHS
     console.log("Small list: " + SYMBOLS_SMALL.length); // 8
     console.log("Medium list: " + SYMBOLS_MEDIUM.length); // 18
     console.log("Large list: " + SYMBOLS_LARGE.length); // 32
   }
 
+  // Function to pass overlay elementto gameboard
+  setOverlay(overlay) {
+    this.overlay = overlay;
+
+    // Variable that unambiguously points to the board
+    let board = this;
+
+    // Make overlay listen to clicks
+    this.overlay.addEventListener("click", () => {
+      board.overlayClicked();
+    });
+  }
+
   // The function called when the overlay is clicked.
   overlayClicked() {
-    console.log("Overlay clicked!");
+    // console.log("Overlay clicked!");
 
     // If the overlay can't be clicked away, return without change
     if (!this.overlay.classList.contains("clickaway")) {
@@ -124,6 +136,13 @@ export default class GameBoard {
     this.boardsize = size;
     this.setupBoard();
     this.setupPanels();
+
+    // If there is no overlay, start the game right away
+    if (this.overlay === null) {
+      this.start();
+      return;
+    }
+
     this.showOverlay(true, "Click to Begin");
   }
 
@@ -330,6 +349,11 @@ export default class GameBoard {
     // Set game to Win state
     this.gamestate = GAMESTATE.WIN;
 
+    // If there is no overlay, do nothing
+    if (this.overlay === null) {
+      return;
+    }
+
     // Show win message
     this.showOverlay(true, "You Won!");
     // Disable clicking away overlay
@@ -375,6 +399,10 @@ export default class GameBoard {
 
   // Show or hide overlay. If message included, update it
   showOverlay(show = true, message = null) {
+    if (this.overlay === null) {
+      return;
+    }
+
     if (show) {
       this.overlay.classList.remove("hidden");
     } else {
@@ -389,6 +417,10 @@ export default class GameBoard {
   // Set the message text on the overlay.
   // Does not change overlay visibility.
   setOverlayMessage(message) {
+    if (this.overlay === null) {
+      return;
+    }
+
     // Get overlay message container
     let msg_container = this.overlay.querySelector("#overlay_message");
     if (msg_container === null || msg_container === undefined) {
@@ -404,6 +436,10 @@ export default class GameBoard {
 
   // Toggle overlay's clickaway functionality
   setOverlayClickaway(clickaway) {
+    if (this.overlay === null) {
+      return;
+    }
+
     if (clickaway) {
       this.overlay.classList.add("clickaway");
     } else {
