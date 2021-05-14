@@ -2,14 +2,19 @@ import "./styles.css";
 import GameBoard from "./gameboard.js";
 import { BOARD_SIZES } from "./gameboard.js";
 
-// Get overlay
-let overlay = document.getElementById("game_overlay");
 // Get game board element
 const boardelem = document.getElementById("game_board");
+// Get overlay
+let overlay = document.getElementById("game_overlay");
+// Get status area
+let stats = document.getElementById("game_stats");
+
 // Create GameBoard object
 let gameboard = new GameBoard(boardelem);
 // Pass the overlay element to the board
 gameboard.setOverlay(overlay);
+// Pass the stats element to the board
+gameboard.setStats(stats);
 
 // Start new game with some board size
 gameboard.newGame(BOARD_SIZES.SMALL);
@@ -64,9 +69,8 @@ confirmRestartNoBtn.addEventListener("click", () => {
 // Executable script ends here.
 
 // TODO-LIST:
-// - score (pairs)
-// - prevent hover and click effects when showing if pair is correct
 // - timer
+// - prevent hover and click effects when showing if pair is correct
 // - color change for matching and non matching pairs?
 
 // Function definitions begin here.

@@ -59,6 +59,7 @@ export default class GameBoard {
   constructor(board) {
     this.board = board; // Board element
     this.overlay = null; // Overlay element
+    this.stats = null; // Status element
 
     this.boardsize = BOARD_SIZES.SMALL; // Default size
 
@@ -67,6 +68,7 @@ export default class GameBoard {
     this.selectedPanel = null; // Currently selected panel
 
     this.matches = 0; // How many matches player has made
+    this.totalmatches = 0; // How many matches there are to find
     this.mistakes = 0; // How many mistakes player has made
 
     this.acceptFlips = false; // Whether flips are accepted
@@ -89,17 +91,22 @@ export default class GameBoard {
     console.log("Large list: " + SYMBOLS_LARGE.length); // 32
   }
 
-  // Function to pass overlay elementto gameboard
+  // Function to pass overlay element to gameboard
   setOverlay(overlay) {
     this.overlay = overlay;
 
-    // Variable that unambiguously points to the board
-    let board = this;
+    // Variable that unambiguously points to this
+    let thisobj = this;
 
     // Make overlay listen to clicks
     this.overlay.addEventListener("click", () => {
-      board.overlayClicked();
+      thisobj.overlayClicked();
     });
+  }
+
+  // Function to pass status area element to gameboard
+  setStats(stats) {
+    this.stats = stats;
   }
 
   // The function called when the overlay is clicked.
@@ -132,10 +139,17 @@ export default class GameBoard {
   // Sets up a new game in a pre-start state.
   newGame(size) {
     this.gamestate = GAMESTATE.NOT_STARTED;
-    this.matches = 0;
+
     this.boardsize = size;
+
     this.setupBoard();
     this.setupPanels();
+
+    this.matches = 0;
+    this.totalmatches = (size * size) / 2;
+    this.mistakes = 0;
+    this.updateMatchCount();
+    this.updateMistakeCount();
 
     // If there is no overlay, start the game right away
     if (this.overlay === null) {
@@ -143,6 +157,8 @@ export default class GameBoard {
       return;
     }
 
+    // If there is an overlay, set it to show. Clicking it
+    // will start the game
     this.showOverlay(true, "Click to Begin");
   }
 
@@ -306,6 +322,10 @@ export default class GameBoard {
         // Set timeout for short wait time, when time is up close panels
         // and accept flips again
 
+        // Mark a mistake, update stats
+        this.mistakes++;
+        this.updateMistakeCount();
+
         // Alias parameter to avoid this-confusion
         let selpanel = this.selectedPanel;
 
@@ -318,8 +338,9 @@ export default class GameBoard {
           this.acceptFlips = true;
         }, SHORT_WAIT_TIME);
       } else {
-        // Mark a match
+        // Mark a match, update stats
         this.matches++;
+        this.updateMatchCount();
 
         // Disable both buttons (they will remain open)
         this.selectedPanel.disabled = true;
@@ -332,10 +353,10 @@ export default class GameBoard {
       this.selectedPanel = null; // Reset selection regardless of match
 
       // Check win condition
-      if (this.matches === (this.boardsize * this.boardsize) / 2) {
+      if (this.matches === this.totalmatches) {
         console.log("CURRENT MATCHES, TOTAL MATCHES:");
         console.log(this.matches);
-        console.log((this.boardsize * this.boardsize) / 2);
+        console.log(this.totalmatches);
 
         console.log("All matches found!");
 
@@ -445,6 +466,48 @@ export default class GameBoard {
     } else {
       this.overlay.classList.remove("clickaway");
     }
+  }
+
+  // Update the count of matches in the stats area
+  updateMatchCount() {
+    console.log("updateMatchCount called!");
+    console.log("Matches: " + this.matches);
+
+    // If there is no (defined) stats area, return
+    if (this.stats === null) {
+      console.log("updateMistakeCount ERROR: Stats element is null.");
+      return;
+    }
+
+    let matchDisplay = this.stats.querySelector("#matches");
+
+    if (matchDisplay === null) {
+      console.log("updateMatchCount ERROR: Could not find match field.");
+      return;
+    }
+
+    matchDisplay.innerHTML = this.matches + " / " + this.totalmatches;
+  }
+
+  // Update the count of pairs in the stats area
+  updateMistakeCount() {
+    console.log("updateMistakeCount called!");
+    console.log("Mistakes: " + this.mistakes);
+
+    // If there is no (defined) stats area, return
+    if (this.stats === null) {
+      console.log("updateMistakeCount ERROR: Stats element is null.");
+      return;
+    }
+
+    let mistakeDisplay = this.stats.querySelector("#mistakes");
+
+    if (mistakeDisplay === null) {
+      console.log("updateMistakeCount ERROR: Could not find mistake field.");
+      return;
+    }
+
+    mistakeDisplay.innerHTML = this.mistakes;
   }
 
   // Return whether there is a game in progress
