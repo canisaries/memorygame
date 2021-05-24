@@ -70,7 +70,6 @@ confirmRestartNoBtn.addEventListener("click", () => {
 
 // TODO-LIST:
 // - timer
-// - prevent hover and click effects when showing if pair is correct
 // - color change for matching and non matching pairs?
 
 // Function definitions begin here.

@@ -198,12 +198,14 @@ clicked into hiding */
   align-items: center;
 }
 
-.game_panel:hover {
+/* Reactive game panel reactions (only for closed panels) */
+
+.game_panel.reacts:not(.opened):hover {
   background-color: gray;
   border-color: gray;
 }
 
-.game_panel:active {
+.game_panel.reacts:not(.opened):active {
   border-style: inset;
 }
 

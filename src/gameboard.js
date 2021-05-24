@@ -240,7 +240,7 @@ export default class GameBoard {
   // enable flips and start the timer.
   start() {
     this.gamestate = GAMESTATE.ONGOING;
-    this.acceptFlips = true;
+    this.acceptPanelEvents(true);
     // TODO start timer!
   }
 
@@ -274,9 +274,45 @@ export default class GameBoard {
     }
   }
 
+  // Whether button events are accepted (takes bool)
+  // and whether buttons should change display based on user events
+  acceptPanelEvents(accept) {
+    if (accept === true) {
+      this.acceptFlips = true;
+      this.setPanelsReact(true);
+    } else if (accept === false) {
+      this.acceptFlips = false;
+      this.setPanelsReact(false);
+    } else {
+      console.log(
+        "acceptPanelEvents ERROR: Called with neither true or false."
+      );
+    }
+  }
+
+  // Toggles whether unopened panels should show hover, click etc. effects
+  setPanelsReact(react) {
+    // Get all unopened panels
+    let panels = this.board.querySelectorAll(".game_panel:not(.opened)");
+
+    if (react === true) {
+      // Add react to all unopened panels
+      for (let i = 0; i < panels.length; i++) {
+        panels[i].classList.add("reacts");
+      }
+    } else if (react === false) {
+      // Remove react from all unopened panels
+      for (let i = 0; i < panels.length; i++) {
+        panels[i].classList.remove("reacts");
+      }
+    } else {
+      console.log("setPanelsReact ERROR: Called with neither true or false.");
+    }
+  }
+
   async flipPanel(panel) {
     if (!this.acceptFlips) {
-      console.log("Flips aren't accepted yet.");
+      console.log("Flips aren't currently accepted.");
       return;
     }
 
@@ -311,9 +347,8 @@ export default class GameBoard {
       // Mark panel as opened
       panel.classList.add("opened");
 
-      // DO NOT ACCEPT PANEL FLIPS WHILE CHECK IN PROGRESS
-      this.acceptFlips = false;
-      // TODO: make this also stop hover and click effects
+      // Disable panel events while check in progress
+      this.acceptPanelEvents(false);
 
       // If there is no match, keep buttons open for a while and then close.
       // If there is a match, mark a match and disable both buttons.
@@ -334,8 +369,8 @@ export default class GameBoard {
           selpanel.classList.remove("opened");
           panel.classList.remove("opened");
 
-          // Accept flips again
-          this.acceptFlips = true;
+          // Accept panel events again
+          this.acceptPanelEvents(true);
         }, SHORT_WAIT_TIME);
       } else {
         // Mark a match, update stats
@@ -346,8 +381,8 @@ export default class GameBoard {
         this.selectedPanel.disabled = true;
         panel.disabled = true;
 
-        // Accept flips
-        this.acceptFlips = true;
+        // Accept panel events again
+        this.acceptPanelEvents(true);
       }
 
       this.selectedPanel = null; // Reset selection regardless of match
